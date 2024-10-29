@@ -1,97 +1,113 @@
 // src/controllers/taskController.js
-const taskService = require("../services/taskService");
 
+const {
+  createTask,
+  updateTask,
+  getAllTasks,
+  getTaskById,
+  deleteTask,
+} = require("../services/taskService");
+const { taskSchema } = require("../validators/taskValidator"); // Import du schéma de validation
+
+// Créer une tâche
 exports.createTask = async (req, res) => {
-  const { title, description, completed } = req.body;
+  const { error, value } = taskSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
   try {
-    const task = await taskService.createTask({
-      title,
-      description,
-      completed,
-    });
+    const task = await createTask(value);
     res.status(201).json(task);
-  } catch (error) {
+  } catch (err) {
     res
       .status(500)
-      .json({ message: "Erreur lors de la création de la tâche", error });
+      .json({ message: "Erreur lors de la création de la tâche", error: err });
   }
 };
 
+// Récupérer toutes les tâches
 exports.getAllTasks = async (req, res) => {
-  const {
-    page = 1,
-    limit = 10,
-    sort = "createdAt",
-    order = "ASC",
-    completed,
-  } = req.query;
-  const offset = (page - 1) * limit;
+  const { completed, sort, order, offset, limit } = req.query;
 
   try {
-    const tasks = await taskService.getAllTasks(
-      completed,
-      sort.toString(),
-      order.toString().toUpperCase(),
-      offset.toString(),
-      limit.toString()
-    );
+    const tasks = await getAllTasks(completed, sort, order, offset, limit);
     res.json(tasks);
-  } catch (error) {
+  } catch (err) {
     res
       .status(500)
-      .json({ message: "Erreur lors de la récupération des tâches", error });
+      .json({
+        message: "Erreur lors de la récupération des tâches",
+        error: err,
+      });
   }
 };
 
+// Récupérer une tâche par ID
 exports.getTaskById = async (req, res) => {
   const { id } = req.params;
+
   try {
-    const task = await taskService.getTaskById(id);
+    const task = await getTaskById(id);
     if (task) {
       res.json(task);
     } else {
       res.status(404).json({ message: "Tâche non trouvée" });
     }
-  } catch (error) {
+  } catch (err) {
     res
       .status(500)
-      .json({ message: "Erreur lors de la récupération de la tâche", error });
+      .json({
+        message: "Erreur lors de la récupération de la tâche",
+        error: err,
+      });
   }
 };
 
+// Mettre à jour une tâche
 exports.updateTask = async (req, res) => {
   const { id } = req.params;
-  const { title, description, completed } = req.body;
+  const { error, value } = taskSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
   try {
-    const task = await taskService.getTaskById(id);
+    const task = await updateTask(id, value);
     if (task) {
-      task.setDataValue("title", title);
-      task.setDataValue("description", description);
-      task.setDataValue("completed", completed);
-      await task.save();
       res.json(task);
     } else {
       res.status(404).json({ message: "Tâche non trouvée" });
     }
-  } catch (error) {
+  } catch (err) {
     res
       .status(500)
-      .json({ message: "Erreur lors de la mise à jour de la tâche", error });
+      .json({
+        message: "Erreur lors de la mise à jour de la tâche",
+        error: err,
+      });
   }
 };
 
+// Supprimer une tâche
 exports.deleteTask = async (req, res) => {
   const { id } = req.params;
+
   try {
-    const result = await taskService.deleteTask(id);
-    if (result) {
+    const success = await deleteTask(id);
+    if (success) {
       res.json({ message: "Tâche supprimée avec succès" });
     } else {
       res.status(404).json({ message: "Tâche non trouvée" });
     }
-  } catch (error) {
+  } catch (err) {
     res
       .status(500)
-      .json({ message: "Erreur lors de la suppression de la tâche", error });
+      .json({
+        message: "Erreur lors de la suppression de la tâche",
+        error: err,
+      });
   }
 };
