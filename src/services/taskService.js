@@ -1,6 +1,6 @@
 // src/services/taskService.js
 const Task = require("../models/Task");
-const { literal } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 
 exports.createTask = async (taskData) => {
   return await Task.create(taskData);
@@ -10,9 +10,9 @@ exports.getAllTasks = async (completed, sort, order, offset, limit) => {
   const orderDirection = order === "DESC" ? "DESC" : "ASC";
   const queryOptions = {
     where: completed ? { completed } : {},
-    order: [[literal(sort), orderDirection]], // Utilisation de Sequelize.literal pour `order`
-    offset,
-    limit,
+    order: Sequelize.literal(`"${sort}" ${orderDirection}`),
+    offset: parseInt(offset, 10),
+    limit: parseInt(limit, 10),
   };
 
   return await Task.findAll(queryOptions);
