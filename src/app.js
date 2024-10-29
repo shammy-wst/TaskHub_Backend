@@ -1,3 +1,8 @@
+require("dotenv").config();
+console.log("Variables d'environnement chargées:", {
+  jwt_secret_exists: !!process.env.JWT_SECRET,
+  env_keys: Object.keys(process.env),
+});
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
