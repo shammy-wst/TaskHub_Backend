@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: taskhub-postgres-new
+    environment:
+      POSTGRES_USER: myuser # Utilisateur PostgreSQL
+      POSTGRES_PASSWORD: mypassword # Mot de passe pour cet utilisateur
+      POSTGRES_DB: taskhub # Nom de la base de données
+    ports:
+      - "5432:5432" # Expose le port 5432 pour les connexions locales
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Volume pour la persistance des données
+    networks:
+      - taskhub-network # Réseau Docker pour les communications
+
+volumes:
+  postgres_data: # Volume de stockage des données
+
+networks:
+  taskhub-network: # Réseau isolé pour les services de l'application
