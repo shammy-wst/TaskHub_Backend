@@ -29,18 +29,22 @@ exports.createTask = async (req, res) => {
 
 // Récupérer toutes les tâches
 exports.getAllTasks = async (req, res) => {
-  const { completed, sort, order, offset, limit } = req.query;
-
   try {
+    const {
+      completed,
+      sort = "createdAt",
+      order = "DESC",
+      offset = 0,
+      limit = 10,
+    } = req.query;
     const tasks = await getAllTasks(completed, sort, order, offset, limit);
-    res.json(tasks);
+    return res.status(200).json(tasks);
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        message: "Erreur lors de la récupération des tâches",
-        error: err,
-      });
+    console.error("Erreur dans getAllTasks controller:", err);
+    return res.status(500).json({
+      message: "Erreur lors de la récupération des tâches",
+      error: err.message,
+    });
   }
 };
 
@@ -56,12 +60,10 @@ exports.getTaskById = async (req, res) => {
       res.status(404).json({ message: "Tâche non trouvée" });
     }
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        message: "Erreur lors de la récupération de la tâche",
-        error: err,
-      });
+    res.status(500).json({
+      message: "Erreur lors de la récupération de la tâche",
+      error: err,
+    });
   }
 };
 
@@ -82,12 +84,10 @@ exports.updateTask = async (req, res) => {
       res.status(404).json({ message: "Tâche non trouvée" });
     }
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        message: "Erreur lors de la mise à jour de la tâche",
-        error: err,
-      });
+    res.status(500).json({
+      message: "Erreur lors de la mise à jour de la tâche",
+      error: err,
+    });
   }
 };
 
@@ -103,11 +103,9 @@ exports.deleteTask = async (req, res) => {
       res.status(404).json({ message: "Tâche non trouvée" });
     }
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        message: "Erreur lors de la suppression de la tâche",
-        error: err,
-      });
+    res.status(500).json({
+      message: "Erreur lors de la suppression de la tâche",
+      error: err,
+    });
   }
 };

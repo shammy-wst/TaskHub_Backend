@@ -6,16 +6,30 @@ exports.createTask = async (taskData) => {
   return await Task.create(taskData);
 };
 
-exports.getAllTasks = async (completed, sort, order, offset, limit) => {
-  const orderDirection = order === "DESC" ? "DESC" : "ASC";
-  const queryOptions = {
-    where: completed ? { completed } : {},
-    order: Sequelize.literal(`"${sort}" ${orderDirection}`),
-    offset: parseInt(offset, 10),
-    limit: parseInt(limit, 10),
-  };
+exports.getAllTasks = async (
+  completed,
+  sort = "createdAt",
+  order = "DESC",
+  offset = 0,
+  limit = 10
+) => {
+  try {
+    const where = {};
+    if (completed !== undefined) {
+      where.completed = completed === "true";
+    }
 
-  return await Task.findAll(queryOptions);
+    const tasks = await Task.findAll({
+      where,
+      order: [[sort, order]],
+      offset: parseInt(offset),
+      limit: parseInt(limit),
+    });
+    return tasks;
+  } catch (error) {
+    console.error("Erreur dans getAllTasks:", error);
+    throw error;
+  }
 };
 
 exports.getTaskById = async (id) => {
