@@ -7,21 +7,34 @@ const {
   getTaskById,
   deleteTask,
 } = require("../services/taskService");
-const { taskSchema } = require("../validators/taskValidator"); // Import du schéma de validation
+const taskSchema = require("../validators/taskValidator").taskSchema;
 
 // Créer une tâche
 exports.createTask = async (req, res) => {
   try {
-    const { error, value } = taskSchema.validate(req.body);
+    // Validation des données
+    const { error, value } = taskSchema.validate(req.body, {
+      abortEarly: false,
+    });
 
     if (error) {
+      const errors = error.details.map((detail) => detail.message);
       return res.status(400).json({
         message: "Données invalides",
-        details: error.details[0].message,
+        details: errors.join(", "),
       });
     }
 
-    const task = await createTask(value);
+    // Création de la tâche
+    const task = {
+      id: Date.now(), // Temporaire, à remplacer par un vrai système d'ID
+      ...value,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    // Ici, vous ajouteriez la tâche à votre base de données
+    // Pour l'instant, on renvoie simplement la tâche créée
     return res.status(201).json(task);
   } catch (err) {
     console.error("Erreur dans createTask:", err);
@@ -44,6 +57,7 @@ exports.getAllTasks = async (req, res) => {
     } = req.query;
 
     const tasks = await getAllTasks(completed, sort, order, offset, limit);
+    console.log("Tâches renvoyées au client:", tasks); // Ajoutez ce log pour vérifier les tâches renvoyées
     return res.status(200).json(tasks || []);
   } catch (err) {
     console.error("Erreur dans getAllTasks:", err);

@@ -25,6 +25,8 @@ exports.getAllTasks = async (
       offset: parseInt(offset),
       limit: parseInt(limit),
     });
+
+    console.log("Tâches récupérées:", tasks); // Ajoutez ce log pour vérifier les tâches récupérées
     return tasks;
   } catch (error) {
     console.error("Erreur dans getAllTasks:", error);
