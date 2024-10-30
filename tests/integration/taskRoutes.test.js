@@ -25,6 +25,30 @@ describe("Task API Integration Tests", () => {
     await sequelize.close();
   });
 
+  describe("Authentication", () => {
+    it("should handle missing token (401)", async () => {
+      const response = await request(app).get("/api/tasks");
+      expect(response.status).toBe(401);
+      expect(response.body).toEqual({ message: "Non autorisé" });
+    });
+
+    it("should handle invalid token (403)", async () => {
+      const response = await request(app)
+        .get("/api/tasks")
+        .set("Authorization", "Bearer invalid_token");
+      expect(response.status).toBe(403);
+      expect(response.body).toEqual({ message: "Interdit" });
+    });
+
+    it("should handle valid token (200)", async () => {
+      const response = await request(app)
+        .get("/api/tasks")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+    });
+  });
+
   describe("POST /api/tasks", () => {
     it("should create a new task", async () => {
       const response = await request(app)
@@ -38,6 +62,19 @@ describe("Task API Integration Tests", () => {
 
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty("title", "Integration Test Task");
+    });
+
+    it("should handle invalid task creation", async () => {
+      const response = await request(app)
+        .post("/api/tasks")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+          title: "Test Task",
+          description: "Test Description",
+          completed: false,
+        });
+
+      expect(response.status).toBe(201);
     });
   });
 
