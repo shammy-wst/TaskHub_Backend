@@ -6,6 +6,7 @@ const {
   getAllTasks,
   getTaskById,
   deleteTask,
+  updateTaskStatus,
 } = require("../services/taskService");
 const taskSchema = require("../validators/taskValidator").taskSchema;
 
@@ -27,7 +28,7 @@ exports.createTask = async (req, res) => {
 
     // Création de la tâche
     const task = await createTask(value);
-    console.log("Tâche créée:", task); // Ajoutez ce log pour vérifier la tâche créée
+    console.log("Tâche créée:", task);
 
     return res.status(201).json(task);
   } catch (err) {
@@ -51,7 +52,7 @@ exports.getAllTasks = async (req, res) => {
     } = req.query;
 
     const tasks = await getAllTasks(completed, sort, order, offset, limit);
-    console.log("Tâches renvoyées au client:", tasks); // Ajoutez ce log pour vérifier les tâches renvoyées
+    console.log("Tâches renvoyées au client:", tasks);
     return res.status(200).json(tasks || []);
   } catch (err) {
     console.error("Erreur dans getAllTasks:", err);
@@ -64,14 +65,15 @@ exports.getAllTasks = async (req, res) => {
 
 // Récupérer une tâche par ID
 exports.getTaskById = async (req, res) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     const task = await getTaskById(id);
+
     if (!task) {
       return res.status(404).json({ message: "Tâche non trouvée" });
     }
-    console.log("Tâche récupérée par ID:", task); // Ajoutez ce log pour vérifier la tâche récupérée par ID
+
+    console.log("Tâche récupérée par ID:", task);
     return res.status(200).json(task);
   } catch (err) {
     console.error("Erreur dans getTaskById:", err);
@@ -84,22 +86,24 @@ exports.getTaskById = async (req, res) => {
 
 // Mettre à jour une tâche
 exports.updateTask = async (req, res) => {
-  const { id } = req.params;
-  const { error, value } = taskSchema.validate(req.body);
-
-  if (error) {
-    return res.status(400).json({
-      message: "Données invalides",
-      details: error.details[0].message,
-    });
-  }
-
   try {
+    const { id } = req.params;
+    const { error, value } = taskSchema.validate(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        message: "Données invalides",
+        details: error.details[0].message,
+      });
+    }
+
     const task = await updateTask(id, value);
+
     if (!task) {
       return res.status(404).json({ message: "Tâche non trouvée" });
     }
-    console.log("Tâche mise à jour:", task); // Ajoutez ce log pour vérifier la tâche mise à jour
+
+    console.log("Tâche mise à jour:", task);
     return res.status(200).json(task);
   } catch (err) {
     console.error("Erreur dans updateTask:", err);
@@ -110,16 +114,40 @@ exports.updateTask = async (req, res) => {
   }
 };
 
+// Mettre à jour le statut d'une tâche
+exports.updateTaskStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const task = await updateTask(id, { status });
+
+    if (!task) {
+      return res.status(404).json({ message: "Tâche non trouvée" });
+    }
+
+    console.log("Statut de la tâche mis à jour:", task);
+    return res.status(200).json(task);
+  } catch (err) {
+    console.error("Erreur dans updateTaskStatus:", err);
+    return res.status(500).json({
+      message: "Erreur lors de la mise à jour du statut de la tâche",
+      error: err.message,
+    });
+  }
+};
+
 // Supprimer une tâche
 exports.deleteTask = async (req, res) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     const success = await deleteTask(id);
+
     if (!success) {
       return res.status(404).json({ message: "Tâche non trouvée" });
     }
-    console.log("Tâche supprimée:", id); // Ajoutez ce log pour vérifier la tâche supprimée
+
+    console.log("Tâche supprimée:", id);
     return res.status(200).json({ message: "Tâche supprimée avec succès" });
   } catch (err) {
     console.error("Erreur dans deleteTask:", err);
