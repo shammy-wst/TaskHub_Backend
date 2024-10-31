@@ -3,7 +3,14 @@ const Task = require("../models/Task");
 const { Op, Sequelize } = require("sequelize");
 
 exports.createTask = async (taskData) => {
-  return await Task.create(taskData);
+  try {
+    const task = await Task.create(taskData);
+    console.log("Tâche créée:", task); // Ajoutez ce log pour vérifier la tâche créée
+    return task;
+  } catch (error) {
+    console.error("Erreur dans createTask:", error);
+    throw error;
+  }
 };
 
 exports.getAllTasks = async (
@@ -32,25 +39,4 @@ exports.getAllTasks = async (
     console.error("Erreur dans getAllTasks:", error);
     throw error;
   }
-};
-
-exports.getTaskById = async (id) => {
-  return await Task.findByPk(id);
-};
-
-exports.updateTask = async (id, taskData) => {
-  const task = await Task.findByPk(id);
-  if (task) {
-    await task.update(taskData);
-  }
-  return task;
-};
-
-exports.deleteTask = async (id) => {
-  const task = await Task.findByPk(id);
-  if (task) {
-    await task.destroy();
-    return true;
-  }
-  return false;
 };

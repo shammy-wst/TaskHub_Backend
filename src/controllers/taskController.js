@@ -26,15 +26,9 @@ exports.createTask = async (req, res) => {
     }
 
     // Création de la tâche
-    const task = {
-      id: Date.now(), // Temporaire, à remplacer par un vrai système d'ID
-      ...value,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    const task = await createTask(value);
+    console.log("Tâche créée:", task); // Ajoutez ce log pour vérifier la tâche créée
 
-    // Ici, vous ajouteriez la tâche à votre base de données
-    // Pour l'instant, on renvoie simplement la tâche créée
     return res.status(201).json(task);
   } catch (err) {
     console.error("Erreur dans createTask:", err);
@@ -77,6 +71,7 @@ exports.getTaskById = async (req, res) => {
     if (!task) {
       return res.status(404).json({ message: "Tâche non trouvée" });
     }
+    console.log("Tâche récupérée par ID:", task); // Ajoutez ce log pour vérifier la tâche récupérée par ID
     return res.status(200).json(task);
   } catch (err) {
     console.error("Erreur dans getTaskById:", err);
@@ -104,6 +99,7 @@ exports.updateTask = async (req, res) => {
     if (!task) {
       return res.status(404).json({ message: "Tâche non trouvée" });
     }
+    console.log("Tâche mise à jour:", task); // Ajoutez ce log pour vérifier la tâche mise à jour
     return res.status(200).json(task);
   } catch (err) {
     console.error("Erreur dans updateTask:", err);
@@ -123,6 +119,7 @@ exports.deleteTask = async (req, res) => {
     if (!success) {
       return res.status(404).json({ message: "Tâche non trouvée" });
     }
+    console.log("Tâche supprimée:", id); // Ajoutez ce log pour vérifier la tâche supprimée
     return res.status(200).json({ message: "Tâche supprimée avec succès" });
   } catch (err) {
     console.error("Erreur dans deleteTask:", err);
