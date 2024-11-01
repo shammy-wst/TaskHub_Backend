@@ -17,8 +17,9 @@ router.get("/:id", authenticateToken, taskController.getTaskById);
 // Mettre à jour une tâche
 router.put("/:id", authenticateToken, taskController.updateTask);
 
-// Mettre à jour le statut d'une tâche
+// Mettre à jour le statut d'une tâche (garder les deux routes)
 router.patch("/status/:id", authenticateToken, taskController.updateTaskStatus);
+router.patch("/:id", authenticateToken, taskController.updateTaskStatus);
 
 // Supprimer une tâche
 router.delete("/:id", authenticateToken, taskController.deleteTask);

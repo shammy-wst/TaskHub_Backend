@@ -1,4 +1,4 @@
-const Task = require("../models/Task");
+const { Task } = require("../models");
 const { Op, Sequelize } = require("sequelize");
 
 // Créer une tâche

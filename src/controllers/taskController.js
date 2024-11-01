@@ -9,11 +9,11 @@ const {
   updateTaskStatus,
 } = require("../services/taskService");
 const taskSchema = require("../validators/taskValidator").taskSchema;
+const { Task, Status } = require("../models");
 
 // Créer une tâche
 exports.createTask = async (req, res) => {
   try {
-    // Validation des données
     const { error, value } = taskSchema.validate(req.body, {
       abortEarly: false,
     });
@@ -26,7 +26,6 @@ exports.createTask = async (req, res) => {
       });
     }
 
-    // Création de la tâche
     const task = await createTask(value);
     console.log("Tâche créée:", task);
 
@@ -120,20 +119,42 @@ exports.updateTaskStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const task = await updateTask(id, { status });
+    console.log("ID reçu:", id);
+    console.log("Status reçu:", status);
+    console.log("Body complet:", req.body);
 
+    if (!status) {
+      return res.status(400).json({ message: "Status manquant" });
+    }
+
+    // Convertir le status texte en ID
+    let statusId;
+    switch (status) {
+      case "en_attente":
+        statusId = 1;
+        break;
+      case "en_cours":
+        statusId = 2;
+        break;
+      case "terminé":
+        statusId = 3;
+        break;
+      default:
+        return res.status(400).json({ message: "Status invalide" });
+    }
+
+    const task = await Task.findByPk(id);
     if (!task) {
       return res.status(404).json({ message: "Tâche non trouvée" });
     }
 
-    console.log("Statut de la tâche mis à jour:", task);
+    task.statusId = statusId;
+    await task.save();
+
     return res.status(200).json(task);
-  } catch (err) {
-    console.error("Erreur dans updateTaskStatus:", err);
-    return res.status(500).json({
-      message: "Erreur lors de la mise à jour du statut de la tâche",
-      error: err.message,
-    });
+  } catch (error) {
+    console.error("Erreur dans updateTaskStatus:", error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
