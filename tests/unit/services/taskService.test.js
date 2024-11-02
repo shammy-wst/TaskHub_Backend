@@ -1,17 +1,19 @@
 /** @jest-environment node */
-const taskService = require("../../../src/services/taskService");
-const { Task } = require("../../../src/models");
-
 jest.mock("../../../src/models", () => ({
   Task: {
     create: jest.fn(),
-    findAll: jest.fn(),
     findOne: jest.fn(),
-    findByPk: jest.fn(),
+    findAll: jest.fn(),
     update: jest.fn(),
     destroy: jest.fn(),
   },
+  Status: {
+    findAll: jest.fn(),
+  },
 }));
+
+const { Task } = require("../../../src/models");
+const taskService = require("../../../src/services/taskService");
 
 describe("TaskService", () => {
   beforeEach(() => {

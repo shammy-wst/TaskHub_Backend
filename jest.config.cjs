@@ -6,4 +6,6 @@ module.exports = {
   coveragePathIgnorePatterns: ["/node_modules/"],
   setupFilesAfterEnv: ["./tests/setup.js"],
   transform: {},
+  clearMocks: true,
+  restoreMocks: true,
 };

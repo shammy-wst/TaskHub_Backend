@@ -1,25 +1,20 @@
+// First, setup the mocks
+jest.mock("../../../src/services/taskService");
+jest.mock("../../../src/models");
+
+// Then require the modules
 const taskController = require("../../../src/controllers/taskController");
 const taskService = require("../../../src/services/taskService");
-const { Task } = require("../../../src/models");
-
-// Mock du service
-jest.mock("../../../src/services/taskService");
-
-// Mock des modèles
-jest.mock("../../../src/models", () => ({
-  Task: {
-    findOne: jest.fn(),
-    update: jest.fn(),
-  },
-}));
 
 describe("TaskController", () => {
   let mockReq;
   let mockRes;
 
   beforeEach(() => {
+    // Clear all mocks before each test
     jest.clearAllMocks();
 
+    // Setup request mock
     mockReq = {
       body: {},
       params: {},
@@ -27,6 +22,7 @@ describe("TaskController", () => {
       user: { id: 1 },
     };
 
+    // Setup response mock
     mockRes = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
