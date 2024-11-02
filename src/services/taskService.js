@@ -1,5 +1,4 @@
 const { Task } = require("../models");
-const { Op, Sequelize } = require("sequelize");
 
 // Créer une tâche
 exports.createTask = async (taskData, userId) => {
