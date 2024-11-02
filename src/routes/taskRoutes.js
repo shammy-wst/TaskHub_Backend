@@ -3,25 +3,24 @@
 const express = require("express");
 const router = express.Router();
 const taskController = require("../controllers/taskController");
-const authenticateToken = require("../middleware/authMiddleware");
 
 // Créer une nouvelle tâche
-router.post("/", authenticateToken, taskController.createTask);
+router.post("/", taskController.createTask);
 
 // Récupérer toutes les tâches avec pagination, tri et filtrage
-router.get("/", authenticateToken, taskController.getAllTasks);
+router.get("/", taskController.getAllTasks);
 
 // Récupérer une tâche par ID
-router.get("/:id", authenticateToken, taskController.getTaskById);
+router.get("/:id", taskController.getTaskById);
 
 // Mettre à jour une tâche
-router.put("/:id", authenticateToken, taskController.updateTask);
+router.put("/:id", taskController.updateTask);
 
 // Mettre à jour le statut d'une tâche (garder les deux routes)
-router.patch("/status/:id", authenticateToken, taskController.updateTaskStatus);
-router.patch("/:id", authenticateToken, taskController.updateTaskStatus);
+router.patch("/status/:id", taskController.updateTaskStatus);
+router.patch("/:id", taskController.updateTaskStatus);
 
 // Supprimer une tâche
-router.delete("/:id", authenticateToken, taskController.deleteTask);
+router.delete("/:id", taskController.deleteTask);
 
 module.exports = router;
