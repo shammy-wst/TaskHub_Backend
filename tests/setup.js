@@ -1,5 +1,5 @@
 /** @jest-environment node */
-const { sequelize } = require("../src/config/config");
+const { sequelize } = require("../src/models");
 const jwt = require("jsonwebtoken");
 
 // Configuration de l'environnement de test

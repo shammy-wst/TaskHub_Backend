@@ -1,18 +1,7 @@
 require("dotenv").config();
 const express = require("express");
-const { sequelize } = require("./src/config/config");
-
 const app = express();
-
-// Test de connexion à la base de données
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log("Connexion à la base de données établie avec succès.");
-  })
-  .catch((err) => {
-    console.error("Impossible de se connecter à la base de données:", err);
-  });
+const { sequelize } = require("./src/models");
 
 // Utiliser uniquement sequelize de models/index.js
 sequelize

@@ -9,9 +9,10 @@ const config = require(__dirname + "/../config/database.js")[env];
 const db = {};
 
 let sequelize;
-try {
-  if (env === "production") {
-    sequelize = new Sequelize(process.env.DATABASE_URL, {
+if (env === "production") {
+  sequelize = new Sequelize(
+    process.env.POSTGRES_URL || process.env.DATABASE_URL,
+    {
       dialect: "postgres",
       dialectOptions: {
         ssl: {
@@ -19,53 +20,38 @@ try {
           rejectUnauthorized: false,
         },
       },
-      pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000,
-      },
-    });
-  } else {
-    sequelize = new Sequelize(
-      config.database,
-      config.username,
-      config.password,
-      {
-        host: config.host,
-        dialect: config.dialect,
-        ...config,
-      }
-    );
-  }
-
-  // Charger tous les modèles
-  fs.readdirSync(__dirname)
-    .filter((file) => {
-      return (
-        file.indexOf(".") !== 0 &&
-        file !== basename &&
-        file.slice(-3) === ".js" &&
-        file.indexOf(".test.js") === -1
-      );
-    })
-    .forEach((file) => {
-      const model = require(path.join(__dirname, file))(sequelize, DataTypes);
-      db[model.name] = model;
-    });
-
-  // Définir les relations après que tous les modèles sont chargés
-  Object.keys(db).forEach((modelName) => {
-    if (db[modelName].associate) {
-      db[modelName].associate(db);
     }
+  );
+} else {
+  sequelize = new Sequelize(config.database, config.username, config.password, {
+    host: config.host,
+    dialect: config.dialect,
+  });
+}
+
+// Charger tous les modèles
+fs.readdirSync(__dirname)
+  .filter((file) => {
+    return (
+      file.indexOf(".") !== 0 &&
+      file !== basename &&
+      file.slice(-3) === ".js" &&
+      file.indexOf(".test.js") === -1
+    );
+  })
+  .forEach((file) => {
+    const model = require(path.join(__dirname, file))(sequelize, DataTypes);
+    db[model.name] = model;
   });
 
-  db.sequelize = sequelize;
-  db.Sequelize = Sequelize;
-} catch (error) {
-  console.error("Erreur lors de l'initialisation de Sequelize:", error);
-  throw error;
-}
+// Définir les relations après que tous les modèles sont chargés
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
+
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
 module.exports = db;
