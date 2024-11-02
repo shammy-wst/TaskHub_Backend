@@ -2,10 +2,13 @@ const { Task } = require("../models");
 const { Op, Sequelize } = require("sequelize");
 
 // Créer une tâche
-exports.createTask = async (taskData) => {
+exports.createTask = async (taskData, userId) => {
   try {
-    const task = await Task.create(taskData);
-    console.log("Tâche créée:", task);
+    const task = await Task.create({
+      ...taskData,
+      userId,
+    });
+    console.log("Task created:", task);
     return task;
   } catch (error) {
     console.error("Erreur dans createTask:", error);
@@ -15,6 +18,7 @@ exports.createTask = async (taskData) => {
 
 // Récupérer toutes les tâches
 exports.getAllTasks = async (
+  userId,
   completed,
   sort = "createdAt",
   order = "DESC",
@@ -22,7 +26,7 @@ exports.getAllTasks = async (
   limit = 10
 ) => {
   try {
-    const where = {};
+    const where = { userId };
     if (completed !== undefined) {
       where.completed = completed === "true";
     }
@@ -34,7 +38,7 @@ exports.getAllTasks = async (
       limit: parseInt(limit),
     });
 
-    console.log("Tâches récupérées:", tasks);
+    console.log("Tasks retrieved:", tasks);
     return tasks;
   } catch (error) {
     console.error("Erreur dans getAllTasks:", error);
@@ -43,13 +47,18 @@ exports.getAllTasks = async (
 };
 
 // Récupérer une tâche par ID
-exports.getTaskById = async (id) => {
+exports.getTaskById = async (id, userId) => {
   try {
-    const task = await Task.findByPk(id);
+    const task = await Task.findOne({
+      where: {
+        id,
+        userId,
+      },
+    });
     if (!task) {
-      throw new Error("Tâche non trouvée");
+      throw new Error("Task not found");
     }
-    console.log("Tâche trouvée par ID:", task);
+    console.log("Task found by ID:", task);
     return task;
   } catch (error) {
     console.error("Erreur dans getTaskById:", error);
@@ -58,15 +67,19 @@ exports.getTaskById = async (id) => {
 };
 
 // Mettre à jour une tâche
-exports.updateTask = async (id, taskData) => {
+exports.updateTask = async (id, taskData, userId) => {
   try {
-    const task = await Task.findByPk(id);
+    const task = await Task.findOne({
+      where: {
+        id,
+        userId,
+      },
+    });
     if (!task) {
       return null;
     }
-
     await task.update(taskData);
-    console.log("Tâche mise à jour:", task);
+    console.log("Task updated:", task);
     return task;
   } catch (error) {
     console.error("Erreur dans updateTask:", error);
@@ -83,7 +96,7 @@ exports.updateTaskStatus = async (id, status) => {
     }
 
     await task.update({ status });
-    console.log("Statut de la tâche mis à jour:", task);
+    console.log("Task status updated:", task);
     return task;
   } catch (error) {
     console.error("Erreur dans updateTaskStatus:", error);
@@ -92,14 +105,20 @@ exports.updateTaskStatus = async (id, status) => {
 };
 
 // Supprimer une tâche
-exports.deleteTask = async (id) => {
+exports.deleteTask = async (id, userId) => {
   try {
-    const task = await Task.findByPk(id);
+    const task = await Task.findOne({
+      where: {
+        id,
+        userId,
+      },
+    });
+
     if (!task) {
       return false;
     }
+
     await task.destroy();
-    console.log("Tâche supprimée:", id);
     return true;
   } catch (error) {
     console.error("Erreur dans deleteTask:", error);

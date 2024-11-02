@@ -1,30 +1,45 @@
 // src/models/Task.js
 
+const { Model } = require("sequelize");
+
 module.exports = (sequelize, DataTypes) => {
-  const Task = sequelize.define(
-    "Task",
+  class Task extends Model {
+    static associate(models) {
+      Task.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "user",
+      });
+    }
+  }
+
+  Task.init(
     {
       title: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      description: {
-        type: DataTypes.TEXT,
-        allowNull: true,
+      description: DataTypes.TEXT,
+      status: {
+        type: DataTypes.STRING,
+        defaultValue: "en_attente",
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
       },
       statusId: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        references: {
+          model: "statuses",
+          key: "id",
+        },
       },
     },
     {
-      tableName: "tasks",
+      sequelize,
+      modelName: "Task",
     }
   );
-
-  Task.associate = function (models) {
-    Task.belongsTo(models.Status, { foreignKey: "statusId" });
-  };
 
   return Task;
 };

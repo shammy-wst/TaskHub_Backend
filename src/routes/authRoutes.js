@@ -84,14 +84,14 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ where: { username } });
     if (!user) {
       return res.status(401).json({
-        message: "Nom d'utilisateur ou mot de passe incorrect",
+        message: "Incorrect username or password",
       });
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(401).json({
-        message: "Nom d'utilisateur ou mot de passe incorrect",
+        message: "Incorrect username or password",
       });
     }
 

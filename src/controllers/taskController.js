@@ -14,21 +14,17 @@ const { Task, Status } = require("../models");
 // Créer une tâche
 exports.createTask = async (req, res) => {
   try {
-    const { error, value } = taskSchema.validate(req.body, {
-      abortEarly: false,
-    });
+    const userId = req.user.id; // Obtenu du token JWT
+    const { error, value } = taskSchema.validate(req.body);
 
     if (error) {
-      const errors = error.details.map((detail) => detail.message);
       return res.status(400).json({
-        message: "Données invalides",
-        details: errors.join(", "),
+        message: "Invalid data",
+        details: error.details[0].message,
       });
     }
 
-    const task = await createTask(value);
-    console.log("Tâche créée:", task);
-
+    const task = await createTask(value, userId);
     return res.status(201).json(task);
   } catch (err) {
     console.error("Erreur dans createTask:", err);
@@ -50,8 +46,17 @@ exports.getAllTasks = async (req, res) => {
       limit = 10,
     } = req.query;
 
-    const tasks = await getAllTasks(completed, sort, order, offset, limit);
-    console.log("Tâches renvoyées au client:", tasks);
+    // Récupérer l'userId depuis le token JWT
+    const userId = req.user.id;
+
+    const tasks = await getAllTasks(
+      userId,
+      completed,
+      sort,
+      order,
+      offset,
+      limit
+    );
     return res.status(200).json(tasks || []);
   } catch (err) {
     console.error("Erreur dans getAllTasks:", err);
@@ -66,13 +71,12 @@ exports.getAllTasks = async (req, res) => {
 exports.getTaskById = async (req, res) => {
   try {
     const { id } = req.params;
-    const task = await getTaskById(id);
+    const userId = req.user.id;
 
+    const task = await getTaskById(id, userId);
     if (!task) {
       return res.status(404).json({ message: "Tâche non trouvée" });
     }
-
-    console.log("Tâche récupérée par ID:", task);
     return res.status(200).json(task);
   } catch (err) {
     console.error("Erreur dans getTaskById:", err);
@@ -91,7 +95,7 @@ exports.updateTask = async (req, res) => {
 
     if (error) {
       return res.status(400).json({
-        message: "Données invalides",
+        message: "Invalid data",
         details: error.details[0].message,
       });
     }
@@ -118,40 +122,17 @@ exports.updateTaskStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
+    const userId = req.user.id;
 
-    console.log("ID reçu:", id);
-    console.log("Status reçu:", status);
-    console.log("Body complet:", req.body);
-
-    if (!status) {
-      return res.status(400).json({ message: "Status manquant" });
-    }
-
-    // Convertir le status texte en ID
-    let statusId;
-    switch (status) {
-      case "en_attente":
-        statusId = 1;
-        break;
-      case "en_cours":
-        statusId = 2;
-        break;
-      case "terminé":
-        statusId = 3;
-        break;
-      default:
-        return res.status(400).json({ message: "Status invalide" });
-    }
-
-    const task = await Task.findByPk(id);
+    // Vérifier d'abord que la tâche appartient à l'utilisateur
+    const task = await getTaskById(id, userId);
     if (!task) {
       return res.status(404).json({ message: "Tâche non trouvée" });
     }
 
-    task.statusId = statusId;
-    await task.save();
-
-    return res.status(200).json(task);
+    // Mettre à jour le statut
+    const updatedTask = await updateTask(id, { status }, userId);
+    return res.status(200).json(updatedTask);
   } catch (error) {
     console.error("Erreur dans updateTaskStatus:", error);
     return res.status(500).json({ message: error.message });
@@ -162,13 +143,13 @@ exports.updateTaskStatus = async (req, res) => {
 exports.deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const success = await deleteTask(id);
+    const userId = req.user.id;
 
+    const success = await deleteTask(id, userId);
     if (!success) {
       return res.status(404).json({ message: "Tâche non trouvée" });
     }
 
-    console.log("Tâche supprimée:", id);
     return res.status(200).json({ message: "Tâche supprimée avec succès" });
   } catch (err) {
     console.error("Erreur dans deleteTask:", err);

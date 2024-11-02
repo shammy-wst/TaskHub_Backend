@@ -6,15 +6,15 @@ const authenticateToken = (req, res, next) => {
 
     if (!authHeader || authHeader === "Bearer null") {
       return res.status(401).json({
-        message: "Non autorisé",
-        details: "Veuillez vous connecter",
+        message: "Unauthorized",
+        details: "Please login",
       });
     }
 
     if (!authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
-        message: "Format d'autorisation invalide",
-        details: "Le token doit commencer par 'Bearer '",
+        message: "Invalid authorization format",
+        details: "Token must start with 'Bearer '",
       });
     }
 
@@ -22,15 +22,15 @@ const authenticateToken = (req, res, next) => {
 
     if (!token) {
       return res.status(401).json({
-        message: "Token manquant",
-        details: "Token non fourni",
+        message: "Token missing",
+        details: "Token not provided",
       });
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
       if (err) {
         return res.status(403).json({
-          message: "Token invalide",
+          message: "Invalid token",
           details: err.message,
         });
       }
@@ -38,10 +38,10 @@ const authenticateToken = (req, res, next) => {
       next();
     });
   } catch (error) {
-    console.error("Erreur d'authentification:", error);
+    console.error("Authentication error:", error);
     return res.status(500).json({
-      message: "Erreur serveur",
-      details: "Erreur lors de la vérification du token",
+      message: "Server error",
+      details: "Error verifying token",
     });
   }
 };
