@@ -27,9 +27,15 @@ export default [
     },
   },
   {
-    files: ["**/migrations/**", "**/seeders/**"],
+    files: [
+      "**/migrations/**",
+      "**/seeders/**",
+      "**/tests/**",
+      "**/coverage/**",
+    ],
     rules: {
       "no-unused-vars": "off",
+      "no-console": "off",
     },
   },
 ];
