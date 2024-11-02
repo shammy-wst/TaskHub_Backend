@@ -7,10 +7,14 @@ const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
-// Configuration CORS
+// Configuration CORS pour dev et prod
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: [
+      "http://localhost:3000",
+      "https://task-hub-taupe.vercel.app",
+      /\.vercel\.app$/,
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: [
       "Content-Type",
@@ -28,12 +32,9 @@ app.use(
 );
 
 app.use(express.json());
-
-// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", authenticateToken, taskRoutes);
 
-// Gestion des erreurs simplifiée
 app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal server error" });
 });
