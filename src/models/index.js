@@ -10,43 +10,30 @@ const db = {};
 
 let sequelize;
 try {
-  if (config.use_env_variable && process.env[config.use_env_variable]) {
-    const dbUrl = process.env[config.use_env_variable];
-    if (!dbUrl) {
-      throw new Error(
-        `La variable d'environnement ${config.use_env_variable} n'est pas définie`
-      );
-    }
-    sequelize = new Sequelize(dbUrl, {
-      ...config,
+  if (env === "production") {
+    sequelize = new Sequelize(process.env.DATABASE_URL, {
+      dialect: "postgres",
       dialectOptions: {
         ssl: {
           require: true,
           rejectUnauthorized: false,
         },
       },
+      pool: {
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000,
+      },
     });
   } else {
-    if (!config.database || !config.username) {
-      throw new Error("La configuration de la base de données est incomplète");
-    }
-
-    const dbConfig = {
-      database: config.database,
-      username: config.username,
-      password: config.password || "",
-      host: config.host || "localhost",
-      dialect: config.dialect || "postgres",
-      ...config,
-    };
-
     sequelize = new Sequelize(
-      dbConfig.database,
-      dbConfig.username,
-      dbConfig.password,
+      config.database,
+      config.username,
+      config.password,
       {
-        host: dbConfig.host,
-        dialect: dbConfig.dialect,
+        host: config.host,
+        dialect: config.dialect,
         ...config,
       }
     );
