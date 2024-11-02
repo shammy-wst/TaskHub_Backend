@@ -10,18 +10,10 @@ const db = {};
 
 let sequelize;
 if (env === "production") {
-  sequelize = new Sequelize(
-    process.env.POSTGRES_URL || process.env.DATABASE_URL,
-    {
-      dialect: "postgres",
-      dialectOptions: {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false,
-        },
-      },
-    }
-  );
+  sequelize = new Sequelize(config.url, {
+    dialect: config.dialect,
+    dialectOptions: config.dialectOptions,
+  });
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, {
     host: config.host,
