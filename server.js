@@ -1,5 +1,20 @@
+require("dotenv").config();
+const express = require("express");
+const { sequelize } = require("./src/models");
+
+const app = express();
+
+// Test de connexion à la base de données
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Connexion à la base de données établie avec succès.");
+  })
+  .catch((err) => {
+    console.error("Impossible de se connecter à la base de données:", err);
+  });
+
 const http = require("http");
-const app = require("./src/app");
 const config = require("./src/config/config");
 
 const server = http.createServer(app);
