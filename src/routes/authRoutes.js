@@ -9,6 +9,16 @@ router.post("/register", async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    // Log pour debug
+    console.log("Register attempt:", { username, password: "***" });
+
+    // Vérification des données reçues
+    if (!username || !password) {
+      return res.status(400).json({
+        message: "Le nom d'utilisateur et le mot de passe sont requis",
+      });
+    }
+
     // Vérification si l'utilisateur existe déjà
     const existingUser = await User.findOne({ where: { username } });
     if (existingUser) {
@@ -30,8 +40,13 @@ router.post("/register", async (req, res) => {
       { expiresIn: "24h" }
     );
 
+    // Réponse avec plus d'informations
     return res.status(201).json({
       token,
+      user: {
+        id: user.id,
+        username: user.username,
+      },
       message: "Compte créé avec succès",
     });
   } catch (error) {
