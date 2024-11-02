@@ -88,15 +88,16 @@ exports.updateTask = async (id, taskData, userId) => {
 };
 
 // Mettre à jour le statut d'une tâche
-exports.updateTaskStatus = async (id, status) => {
+exports.updateTaskStatus = async (id, status, userId) => {
   try {
-    const task = await Task.findByPk(id);
+    const task = await Task.findOne({
+      where: { id, userId },
+    });
     if (!task) {
       return null;
     }
-
-    await task.update({ status });
-    console.log("Task status updated:", task);
+    task.status = status;
+    await task.save();
     return task;
   } catch (error) {
     console.error("Erreur dans updateTaskStatus:", error);
