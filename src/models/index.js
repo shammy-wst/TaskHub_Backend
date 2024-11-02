@@ -17,7 +17,15 @@ try {
         `La variable d'environnement ${config.use_env_variable} n'est pas définie`
       );
     }
-    sequelize = new Sequelize(dbUrl, config);
+    sequelize = new Sequelize(dbUrl, {
+      ...config,
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
+      },
+    });
   } else {
     if (!config.database || !config.username) {
       throw new Error("La configuration de la base de données est incomplète");
