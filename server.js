@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const { sequelize } = require("./src/models");
+const { sequelize } = require("./src/config/config");
 
 const app = express();
 
@@ -14,16 +14,13 @@ sequelize
     console.error("Impossible de se connecter à la base de données:", err);
   });
 
-const http = require("http");
-const config = require("./src/config/config");
-
-const server = http.createServer(app);
-
-config.sequelize
+// Utiliser uniquement sequelize de models/index.js
+sequelize
   .sync()
   .then(() => {
-    server.listen(config.port, () => {
-      console.log(`Server running on port ${config.port}`);
+    const port = process.env.PORT || 3001;
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
     });
   })
   .catch((error) => {

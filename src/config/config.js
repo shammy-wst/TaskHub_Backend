@@ -1,38 +1,32 @@
 require("dotenv").config();
 const { Sequelize } = require("sequelize");
 
-// Nettoyage des valeurs d'environnement
-const dbConfig = {
-  database: process.env.DB_NAME?.trim() || "taskhub",
-  username: process.env.DB_USER?.trim() || "postgres",
-  password: process.env.DB_PASSWORD?.trim() || "postgres",
-  host: process.env.DB_HOST?.trim() || "localhost",
-  port: parseInt(process.env.DB_PORT || "5432", 10),
-  dialect: "postgres",
-  logging: false,
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000,
-  },
-};
+let sequelize;
 
-const sequelize = new Sequelize(
-  dbConfig.database,
-  dbConfig.username,
-  dbConfig.password,
-  {
-    host: dbConfig.host,
-    port: dbConfig.port,
-    dialect: dbConfig.dialect,
-    logging: dbConfig.logging,
-    pool: dbConfig.pool,
-  }
-);
+if (process.env.NODE_ENV === "production") {
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: "postgres",
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+    logging: false,
+  });
+} else {
+  sequelize = new Sequelize({
+    database: process.env.DB_NAME || "taskhub",
+    username: process.env.DB_USER || "postgres",
+    password: process.env.DB_PASSWORD || "postgres",
+    host: process.env.DB_HOST || "localhost",
+    port: parseInt(process.env.DB_PORT || "5432", 10),
+    dialect: "postgres",
+    logging: false,
+  });
+}
 
 module.exports = {
-  port: parseInt(process.env.PORT || "3000", 10),
   sequelize,
-  dbConfig, // exporter la config pour les tests
+  port: parseInt(process.env.PORT || "3000", 10),
 };
