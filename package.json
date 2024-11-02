@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Backend API for TaskHub application",
   "main": "server.js",
-  "type": "module",
   "scripts": {
     "test": "jest --coverage",
     "lint": "eslint .",
