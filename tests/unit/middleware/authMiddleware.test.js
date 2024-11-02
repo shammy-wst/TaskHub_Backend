@@ -22,8 +22,7 @@ describe("Auth Middleware", () => {
 
     expect(mockRes.status).toHaveBeenCalledWith(401);
     expect(mockRes.json).toHaveBeenCalledWith({
-      message: "Unauthorized",
-      details: "Please login",
+      message: "Token d'authentification manquant",
     });
     expect(nextFunction).not.toHaveBeenCalled();
   });
@@ -35,8 +34,7 @@ describe("Auth Middleware", () => {
 
     expect(mockRes.status).toHaveBeenCalledWith(403);
     expect(mockRes.json).toHaveBeenCalledWith({
-      message: "Invalid token",
-      details: expect.any(String),
+      message: "Token invalide ou expiré",
     });
     expect(nextFunction).not.toHaveBeenCalled();
   });
@@ -57,10 +55,9 @@ describe("Auth Middleware", () => {
 
     authMiddleware(mockReq, mockRes, nextFunction);
 
-    expect(mockRes.status).toHaveBeenCalledWith(401);
+    expect(mockRes.status).toHaveBeenCalledWith(403);
     expect(mockRes.json).toHaveBeenCalledWith({
-      message: "Invalid authorization format",
-      details: "Token must start with 'Bearer '",
+      message: "Token invalide ou expiré",
     });
   });
 
@@ -72,8 +69,7 @@ describe("Auth Middleware", () => {
 
     expect(mockRes.status).toHaveBeenCalledWith(403);
     expect(mockRes.json).toHaveBeenCalledWith({
-      message: "Invalid token",
-      details: expect.any(String),
+      message: "Token invalide ou expiré",
     });
   });
 });

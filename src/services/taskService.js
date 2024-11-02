@@ -1,4 +1,5 @@
 const { Task } = require("../models");
+const logger = require("../utils/logger");
 
 // Créer une tâche
 exports.createTask = async (taskData, userId) => {
@@ -69,19 +70,17 @@ exports.getTaskById = async (id, userId) => {
 exports.updateTask = async (id, taskData, userId) => {
   try {
     const task = await Task.findOne({
-      where: {
-        id,
-        userId,
-      },
+      where: { id, userId },
     });
     if (!task) {
+      logger.debug(`Tâche non trouvée pour mise à jour: ID ${id}`);
       return null;
     }
-    await task.update(taskData);
-    console.log("Task updated:", task);
-    return task;
+    const updatedTask = await task.update(taskData);
+    logger.info(`Tâche ${id} mise à jour avec succès`);
+    return updatedTask;
   } catch (error) {
-    console.error("Erreur dans updateTask:", error);
+    logger.error("Erreur lors de la mise à jour de la tâche:", error);
     throw error;
   }
 };
@@ -93,13 +92,15 @@ exports.updateTaskStatus = async (id, status, userId) => {
       where: { id, userId },
     });
     if (!task) {
+      logger.debug(`Tâche non trouvée pour mise à jour du statut: ID ${id}`);
       return null;
     }
     task.status = status;
-    await task.save();
-    return task;
+    const savedTask = await task.save();
+    logger.info(`Statut de la tâche ${id} mis à jour: ${status}`);
+    return savedTask;
   } catch (error) {
-    console.error("Erreur dans updateTaskStatus:", error);
+    logger.error("Erreur lors de la mise à jour du statut:", error);
     throw error;
   }
 };

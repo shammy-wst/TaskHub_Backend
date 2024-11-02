@@ -1,13 +1,14 @@
 const { Task, User, sequelize } = require("../models");
+const logger = require("../utils/logger");
 
 async function clearAllData() {
   try {
-    // Démarrer une transaction
     await sequelize.transaction(async (t) => {
-      // Désactiver temporairement les contraintes de clé étrangère
+      logger.info("Début de la suppression des données");
+
       await sequelize.query("SET CONSTRAINTS ALL DEFERRED", { transaction: t });
 
-      // Supprimer d'abord les tâches (table enfant)
+      logger.debug("Suppression des tâches");
       await Task.destroy({
         where: {},
         force: true,
@@ -16,7 +17,7 @@ async function clearAllData() {
         transaction: t,
       });
 
-      // Puis supprimer les utilisateurs (table parent)
+      logger.debug("Suppression des utilisateurs");
       await User.destroy({
         where: {},
         force: true,
@@ -25,15 +26,13 @@ async function clearAllData() {
         transaction: t,
       });
 
-      // Réactiver les contraintes
       await sequelize.query("SET CONSTRAINTS ALL IMMEDIATE", {
         transaction: t,
       });
+      logger.info("Suppression des données terminée avec succès");
     });
-
-    console.log("Toutes les données ont été effacées avec succès");
   } catch (error) {
-    console.error("Erreur lors de la suppression des données:", error);
+    logger.error("Erreur lors de la suppression des données:", error);
   } finally {
     await sequelize.close();
     process.exit();

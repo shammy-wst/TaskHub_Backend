@@ -1,4 +1,5 @@
 const { Sequelize } = require("sequelize");
+const logger = require("../utils/logger");
 
 const sequelize = new Sequelize({
   dialect: "postgres",
@@ -20,10 +21,10 @@ const sequelize = new Sequelize({
 sequelize
   .authenticate()
   .then(() => {
-    console.log("Connexion à la base de données de test établie.");
+    logger.info("Connexion à la base de données de test établie");
   })
   .catch((err) => {
-    console.error(
+    logger.error(
       "Impossible de se connecter à la base de données de test:",
       err
     );

@@ -1,6 +1,3 @@
-// src/controllers/taskController.js
-
-// Importer uniquement les services utilisés
 const {
   createTask,
   updateTask,
@@ -10,14 +7,12 @@ const {
 } = require("../services/taskService");
 
 const { taskSchema } = require("../validators/taskValidator");
+const { Task } = require("../models");
+const logger = require("../utils/logger");
 
-// Supprimer l'import de Task et Status car ils ne sont pas utilisés
-// const { Task, Status } = require("../models");
-
-// Créer une tâche
 exports.createTask = async (req, res) => {
   try {
-    const userId = req.user.id; // Obtenu du token JWT
+    const userId = req.user.id;
     const { error, value } = taskSchema.validate(req.body);
 
     if (error) {
@@ -27,10 +22,13 @@ exports.createTask = async (req, res) => {
       });
     }
 
+    // S'assurer que le status initial est "en_attente"
+    value.status = "en_attente";
+
     const task = await createTask(value, userId);
     return res.status(201).json(task);
   } catch (err) {
-    console.error("Erreur dans createTask:", err);
+    logger.error("Erreur dans createTask:", err);
     return res.status(500).json({
       message: "Erreur lors de la création de la tâche",
       error: err.message,
@@ -38,7 +36,6 @@ exports.createTask = async (req, res) => {
   }
 };
 
-// Récupérer toutes les tâches
 exports.getAllTasks = async (req, res) => {
   try {
     const {
@@ -49,7 +46,6 @@ exports.getAllTasks = async (req, res) => {
       limit = 10,
     } = req.query;
 
-    // Récupérer l'userId depuis le token JWT
     const userId = req.user.id;
 
     const tasks = await getAllTasks(
@@ -62,7 +58,7 @@ exports.getAllTasks = async (req, res) => {
     );
     return res.status(200).json(tasks || []);
   } catch (err) {
-    console.error("Erreur dans getAllTasks:", err);
+    logger.error("Erreur dans getAllTasks:", err);
     return res.status(500).json({
       message: "Erreur lors de la récupération des tâches",
       error: err.message,
@@ -70,7 +66,6 @@ exports.getAllTasks = async (req, res) => {
   }
 };
 
-// Récupérer une tâche par ID
 exports.getTaskById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -82,7 +77,7 @@ exports.getTaskById = async (req, res) => {
     }
     return res.status(200).json(task);
   } catch (err) {
-    console.error("Erreur dans getTaskById:", err);
+    logger.error("Erreur dans getTaskById:", err);
     return res.status(500).json({
       message: "Erreur lors de la récupération de la tâche",
       error: err.message,
@@ -90,7 +85,6 @@ exports.getTaskById = async (req, res) => {
   }
 };
 
-// Mettre à jour une tâche
 exports.updateTask = async (req, res) => {
   try {
     const { id } = req.params;
@@ -112,7 +106,7 @@ exports.updateTask = async (req, res) => {
     console.log("Tâche mise à jour:", task);
     return res.status(200).json(task);
   } catch (err) {
-    console.error("Erreur dans updateTask:", err);
+    logger.error("Erreur dans updateTask:", err);
     return res.status(500).json({
       message: "Erreur lors de la mise à jour de la tâche",
       error: err.message,
@@ -120,29 +114,41 @@ exports.updateTask = async (req, res) => {
   }
 };
 
-// Mettre à jour le statut d'une tâche
 exports.updateTaskStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
     const userId = req.user.id;
 
-    // Vérifier d'abord que la tâche appartient à l'utilisateur
-    const task = await getTaskById(id, userId);
+    const validStatuses = ["en_attente", "en_cours", "terminé"];
+    if (!validStatuses.includes(status)) {
+      logger.debug("Statut invalide reçu:", status);
+      return res.status(400).json({
+        message:
+          "Statut invalide. Les valeurs possibles sont: en_attente, en_cours, terminé",
+      });
+    }
+
+    const task = await Task.findOne({
+      where: { id, userId },
+    });
+
     if (!task) {
+      logger.debug(`Tâche non trouvée: ID ${id}, UserID ${userId}`);
       return res.status(404).json({ message: "Tâche non trouvée" });
     }
 
-    // Mettre à jour le statut
-    const updatedTask = await updateTask(id, { status }, userId);
+    const updatedTask = await task.update({ status });
+    logger.info(`Tâche ${id} mise à jour: ${status}`);
     return res.status(200).json(updatedTask);
   } catch (error) {
-    console.error("Erreur dans updateTaskStatus:", error);
-    return res.status(500).json({ message: error.message });
+    logger.error("Erreur lors de la mise à jour du statut:", error);
+    return res
+      .status(500)
+      .json({ message: "Erreur lors de la mise à jour du statut" });
   }
 };
 
-// Supprimer une tâche
 exports.deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
@@ -155,7 +161,7 @@ exports.deleteTask = async (req, res) => {
 
     return res.status(200).json({ message: "Tâche supprimée avec succès" });
   } catch (err) {
-    console.error("Erreur dans deleteTask:", err);
+    logger.error("Erreur dans deleteTask:", err);
     return res.status(500).json({
       message: "Erreur lors de la suppression de la tâche",
       error: err.message,

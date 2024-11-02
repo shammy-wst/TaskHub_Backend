@@ -8,10 +8,11 @@ const env = process.env.NODE_ENV || "development";
 const config = require(__dirname + "/../config/database.js")[env];
 const db = {};
 
+const logger = require("../utils/logger");
+
 let sequelize;
 if (env === "production") {
-  console.log("DATABASE_URL:", process.env.DATABASE_URL);
-
+  logger.info("Initialisation de la base de données en production");
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: "postgres",
     dialectOptions: {
@@ -20,13 +21,14 @@ if (env === "production") {
         rejectUnauthorized: false,
       },
     },
-    logging: console.log,
+    logging: false,
   });
 } else {
+  logger.info("Initialisation de la base de données en développement");
   sequelize = new Sequelize(config.database, config.username, config.password, {
     host: config.host,
     dialect: config.dialect,
-    logging: false,
+    logging: (msg) => logger.debug("SQL:", msg),
   });
 }
 

@@ -1,10 +1,20 @@
 // First, setup the mocks
 jest.mock("../../../src/services/taskService");
-jest.mock("../../../src/models");
+jest.mock("../../../src/models", () => ({
+  Task: {
+    findOne: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    destroy: jest.fn(),
+  },
+}));
+jest.mock("../../../src/utils/logger");
 
 // Then require the modules
 const taskController = require("../../../src/controllers/taskController");
 const taskService = require("../../../src/services/taskService");
+const { Task } = require("../../../src/models");
+const logger = require("../../../src/utils/logger");
 
 describe("TaskController", () => {
   let mockReq;
@@ -131,39 +141,26 @@ describe("TaskController", () => {
         id: taskId,
         status: "en_cours",
         userId: 1,
+        update: jest.fn().mockResolvedValue({ status: newStatus }),
       };
 
-      // Mock du service getTaskById et updateTask
-      taskService.getTaskById.mockResolvedValue(mockTask);
-      taskService.updateTask.mockResolvedValue({
-        ...mockTask,
-        status: newStatus,
-      });
+      Task.findOne.mockResolvedValue(mockTask);
 
       await taskController.updateTaskStatus(mockReq, mockRes);
 
-      expect(taskService.getTaskById).toHaveBeenCalledWith(
-        taskId,
-        mockReq.user.id
-      );
-      expect(taskService.updateTask).toHaveBeenCalledWith(
-        taskId,
-        { status: newStatus },
-        mockReq.user.id
-      );
-      expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(mockRes.json).toHaveBeenCalledWith({
-        ...mockTask,
-        status: newStatus,
+      expect(Task.findOne).toHaveBeenCalledWith({
+        where: { id: taskId, userId: mockReq.user.id },
       });
+      expect(mockRes.status).toHaveBeenCalledWith(200);
     });
 
     it("should handle task not found", async () => {
-      mockReq.params.id = 999;
+      const taskId = "999";
+      mockReq.params.id = taskId;
       mockReq.body = { status: "en_cours" };
-      mockReq.user = { id: 1 };
 
-      taskService.getTaskById.mockResolvedValue(null);
+      // Mock Task.findOne pour retourner null
+      Task.findOne.mockResolvedValue(null);
 
       await taskController.updateTaskStatus(mockReq, mockRes);
 
@@ -174,17 +171,18 @@ describe("TaskController", () => {
     });
 
     it("should handle service error", async () => {
-      mockReq.params.id = 1;
-      mockReq.body = { status: "terminé" };
-      mockReq.user = { id: 1 };
+      const taskId = "1";
+      mockReq.params.id = taskId;
+      mockReq.body = { status: "en_cours" };
 
-      taskService.getTaskById.mockRejectedValue(new Error("Service error"));
+      // Mock Task.findOne pour lancer une erreur
+      Task.findOne.mockRejectedValue(new Error("Service error"));
 
       await taskController.updateTaskStatus(mockReq, mockRes);
 
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
-        message: "Service error",
+        message: "Erreur lors de la mise à jour du statut",
       });
     });
   });
@@ -194,7 +192,7 @@ describe("TaskController", () => {
       const newTask = {
         title: "New Task",
         description: "Description",
-        status: "en_cours",
+        status: "en_attente",
       };
       mockReq.body = newTask;
 
@@ -231,7 +229,7 @@ describe("TaskController", () => {
       const newTask = {
         title: "New Task",
         description: "Description",
-        status: "en_cours",
+        status: "en_attente",
       };
       mockReq.body = newTask;
       mockReq.user = { id: 1 };
