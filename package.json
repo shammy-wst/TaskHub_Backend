@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "Backend API for TaskHub application",
   "main": "server.js",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "test": "jest --coverage",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "prepare": "husky install"
   },
   "dependencies": {
