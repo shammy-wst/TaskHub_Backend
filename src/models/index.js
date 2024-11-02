@@ -10,10 +10,17 @@ const db = {};
 
 let sequelize;
 if (env === "production") {
-  sequelize = new Sequelize(config.url, {
-    dialect: config.dialect,
-    dialectOptions: config.dialectOptions,
-    logging: false,
+  console.log("DATABASE_URL:", process.env.DATABASE_URL);
+
+  sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: "postgres",
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+    logging: console.log,
   });
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, {
