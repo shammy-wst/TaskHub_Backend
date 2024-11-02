@@ -1,15 +1,18 @@
 // src/controllers/taskController.js
 
+// Importer uniquement les services utilisés
 const {
   createTask,
   updateTask,
   getAllTasks,
   getTaskById,
   deleteTask,
-  updateTaskStatus,
 } = require("../services/taskService");
-const taskSchema = require("../validators/taskValidator").taskSchema;
-const { Task, Status } = require("../models");
+
+const { taskSchema } = require("../validators/taskValidator");
+
+// Supprimer l'import de Task et Status car ils ne sont pas utilisés
+// const { Task, Status } = require("../models");
 
 // Créer une tâche
 exports.createTask = async (req, res) => {
