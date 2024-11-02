@@ -54,6 +54,25 @@ describe("TaskController", () => {
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.json).toHaveBeenCalledWith(mockUpdatedTask);
     });
+
+    it("should handle task not found", async () => {
+      mockReq.params.id = 999;
+      mockReq.body = {
+        title: "Updated Task",
+        description: "Updated Description",
+        status: "en_cours",
+      };
+      mockReq.user = { id: 1 };
+
+      taskService.updateTask.mockResolvedValue(null);
+
+      await taskController.updateTask(mockReq, mockRes);
+
+      expect(mockRes.status).toHaveBeenCalledWith(404);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        message: "Tâche non trouvée",
+      });
+    });
   });
 
   describe("getAllTasks", () => {

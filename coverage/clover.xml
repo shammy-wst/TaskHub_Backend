@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1730515881566" clover="3.2.0">
-  <project timestamp="1730515881566" name="All files">
-    <metrics statements="212" coveredstatements="177" conditionals="78" coveredconditionals="49" methods="23" coveredmethods="21" elements="313" coveredelements="247" complexity="0" loc="212" ncloc="212" packages="8" files="12" classes="12"/>
+<coverage generated="1730516647390" clover="3.2.0">
+  <project timestamp="1730516647390" name="All files">
+    <metrics statements="212" coveredstatements="178" conditionals="78" coveredconditionals="50" methods="23" coveredmethods="21" elements="313" coveredelements="249" complexity="0" loc="212" ncloc="212" packages="8" files="12" classes="12"/>
     <package name="config">
       <metrics statements="7" coveredstatements="7" conditionals="12" coveredconditionals="6" methods="0" coveredmethods="0"/>
       <file name="config.js" path="/Users/shammy/Documents/GitHub/TaskHub_Backend/src/config/config.js">
         <metrics statements="5" coveredstatements="5" conditionals="12" coveredconditionals="6" methods="0" coveredmethods="0"/>
-        <line num="1" count="7" type="stmt"/>
-        <line num="2" count="7" type="stmt"/>
-        <line num="5" count="7" type="stmt"/>
-        <line num="21" count="7" type="stmt"/>
-        <line num="34" count="7" type="stmt"/>
+        <line num="1" count="9" type="stmt"/>
+        <line num="2" count="9" type="stmt"/>
+        <line num="5" count="9" type="stmt"/>
+        <line num="21" count="9" type="stmt"/>
+        <line num="34" count="9" type="stmt"/>
       </file>
       <file name="database.js" path="/Users/shammy/Documents/GitHub/TaskHub_Backend/src/config/database.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="1" count="1" type="stmt"/>
-        <line num="3" count="1" type="stmt"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
       </file>
     </package>
     <package name="controllers">
-      <metrics statements="65" coveredstatements="49" conditionals="18" coveredconditionals="10" methods="6" coveredmethods="5"/>
+      <metrics statements="65" coveredstatements="50" conditionals="18" coveredconditionals="11" methods="6" coveredmethods="5"/>
       <file name="taskController.js" path="/Users/shammy/Documents/GitHub/TaskHub_Backend/src/controllers/taskController.js">
-        <metrics statements="65" coveredstatements="49" conditionals="18" coveredconditionals="10" methods="6" coveredmethods="5"/>
+        <metrics statements="65" coveredstatements="50" conditionals="18" coveredconditionals="11" methods="6" coveredmethods="5"/>
         <line num="10" count="1" type="stmt"/>
         <line num="12" count="1" type="stmt"/>
         <line num="18" count="1" type="stmt"/>
@@ -53,14 +53,14 @@
         <line num="85" count="1" type="stmt"/>
         <line num="86" count="1" type="stmt"/>
         <line num="94" count="1" type="stmt"/>
-        <line num="95" count="1" type="stmt"/>
-        <line num="96" count="1" type="stmt"/>
-        <line num="97" count="1" type="stmt"/>
-        <line num="99" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="95" count="2" type="stmt"/>
+        <line num="96" count="2" type="stmt"/>
+        <line num="97" count="2" type="stmt"/>
+        <line num="99" count="2" type="cond" truecount="1" falsecount="1"/>
         <line num="100" count="0" type="stmt"/>
-        <line num="106" count="1" type="stmt"/>
-        <line num="108" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="109" count="0" type="stmt"/>
+        <line num="106" count="2" type="stmt"/>
+        <line num="108" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="109" count="1" type="stmt"/>
         <line num="112" count="1" type="stmt"/>
         <line num="113" count="1" type="stmt"/>
         <line num="115" count="0" type="stmt"/>
@@ -144,36 +144,36 @@
       </file>
       <file name="index.js" path="/Users/shammy/Documents/GitHub/TaskHub_Backend/src/models/index.js">
         <metrics statements="30" coveredstatements="23" conditionals="24" coveredconditionals="15" methods="3" coveredmethods="3"/>
-        <line num="3" count="1" type="stmt"/>
-        <line num="4" count="1" type="stmt"/>
-        <line num="5" count="1" type="stmt"/>
-        <line num="6" count="1" type="stmt"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="8" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="13" count="1" type="stmt"/>
-        <line num="14" count="1" type="cond" truecount="2" falsecount="2"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="14" count="2" type="cond" truecount="2" falsecount="2"/>
         <line num="15" count="0" type="stmt"/>
         <line num="16" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="17" count="0" type="stmt"/>
         <line num="21" count="0" type="stmt"/>
-        <line num="23" count="1" type="cond" truecount="3" falsecount="1"/>
+        <line num="23" count="2" type="cond" truecount="3" falsecount="1"/>
         <line num="24" count="0" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="36" count="1" type="stmt"/>
-        <line num="49" count="1" type="stmt"/>
-        <line num="51" count="4" type="stmt"/>
-        <line num="59" count="3" type="stmt"/>
-        <line num="60" count="3" type="stmt"/>
-        <line num="64" count="1" type="stmt"/>
-        <line num="65" count="3" type="cond" truecount="2" falsecount="0"/>
-        <line num="66" count="2" type="stmt"/>
-        <line num="70" count="1" type="stmt"/>
-        <line num="71" count="1" type="stmt"/>
+        <line num="27" count="2" type="stmt"/>
+        <line num="36" count="2" type="stmt"/>
+        <line num="49" count="2" type="stmt"/>
+        <line num="51" count="8" type="stmt"/>
+        <line num="59" count="6" type="stmt"/>
+        <line num="60" count="6" type="stmt"/>
+        <line num="64" count="2" type="stmt"/>
+        <line num="65" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="66" count="3" type="stmt"/>
+        <line num="70" count="2" type="stmt"/>
+        <line num="71" count="2" type="stmt"/>
         <line num="73" count="0" type="stmt"/>
         <line num="74" count="0" type="stmt"/>
-        <line num="77" count="1" type="stmt"/>
+        <line num="77" count="2" type="stmt"/>
       </file>
     </package>
     <package name="routes">
