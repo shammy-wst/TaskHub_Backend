@@ -15,7 +15,7 @@ export default [
       },
     },
     rules: {
-      "no-console": process.env.NODE_ENV === "production" ? "error" : "warn",
+      "no-console": process.env.NODE_ENV === "production" ? "error" : "off",
       "no-debugger": process.env.NODE_ENV === "production" ? "error" : "warn",
       "no-unused-vars": [
         "error",
@@ -32,6 +32,7 @@ export default [
       "**/seeders/**",
       "**/tests/**",
       "**/coverage/**",
+      "server.js",
     ],
     rules: {
       "no-unused-vars": "off",
