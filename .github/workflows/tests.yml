@@ -10,39 +10,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:latest
-        env:
-          POSTGRES_DB: taskhub_test
-          POSTGRES_USER: myuser
-          POSTGRES_PASSWORD: mypassword
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18.x"
+      - name: Set up Docker Compose
+        uses: ndeloof/install-compose-action@v0.0.1
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Build and test
+        run: |
+          docker compose -f docker-compose.test.yml up --build --exit-code-from app
 
-      - name: Run tests
-        run: npm test
-        env:
-          DB_NAME: taskhub_test
-          DB_USER: myuser
-          DB_PASSWORD: mypassword
-          DB_HOST: localhost
-          DB_PORT: 5432
-          NODE_ENV: test
-          JWT_SECRET: test-secret-key
+      - name: Clean up
+        if: always()
+        run: docker compose -f docker-compose.test.yml down
