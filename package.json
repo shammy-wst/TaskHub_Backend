@@ -7,7 +7,7 @@
     "test": "jest --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepare": "husky install"
+    "postinstall": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install; fi"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
